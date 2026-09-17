@@ -3,39 +3,65 @@
    ======================================== */
 
 // --- Events ---
+
 export type EventModality = 'in-person' | 'online' | 'hybrid';
-export type EventStatus = 'draft' | 'published' | 'cancelled' | 'completed' | 'recurring';
+
+export type EventStatus =
+  | 'draft'
+  | 'published'
+  | 'cancelled'
+  | 'completed'
+  | 'recurring';
+
 export type EventPricing = 'free' | 'donation' | 'fixed';
 
 export interface SEvent {
+  // Supabase fields
+  id?: string;
   slug: string;
   title: string;
   summary: string;
-  description: string; // MDX/Markdown
-  startDate: string; // ISO 8601
-  endDate: string; // ISO 8601
-  timezone: string;
+  description: string;
+
+  starts_at?: string;
+  ends_at?: string;
+
   location: string;
-  modality: EventModality;
+
+  published?: boolean;
+
+  series_id?: string | null;
+  import_id?: string | null;
+
+  // Frontend-compatible date fields
+  startDate: string;
+  endDate: string;
+
+  // Legacy/optional fields still used elsewhere in the app
+  timezone?: string;
+  modality?: EventModality;
   registrationUrl?: string;
   videoCallUrl?: string;
-  organizer: string;
+  organizer?: string;
   facilitator?: string;
-  pricing: EventPricing;
+  pricing?: EventPricing;
   price?: number;
   suggestedDonation?: number;
   currency?: string;
   capacity?: number;
-  tags: string[];
-  image?: string;
-  status: EventStatus;
+  tags?: string[];
+  image?: string | null;
+  status?: EventStatus;
+
   seo?: SEOMeta;
-  autoPublish?: string[]; // channels
+  autoPublish?: string[];
+
   createdAt?: string;
   updatedAt?: string;
 }
 
 // --- Blog / Posts ---
+
 export type BlogSection =
   | 'shambhala-vision'
   | 'what-we-offer'
@@ -44,6 +70,7 @@ export type BlogSection =
   | 'membership';
 
 export interface BlogPost {
+  id?: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -58,6 +85,7 @@ export interface BlogPost {
 }
 
 // --- Pages ---
+
 export interface Page {
   slug: string;
   title: string;
@@ -67,6 +95,7 @@ export interface Page {
 }
 
 // --- Facilitator ---
+
 export interface Facilitator {
   slug: string;
   name: string;
@@ -76,6 +105,7 @@ export interface Facilitator {
 }
 
 // --- Donation ---
+
 export interface DonationMethod {
   id: string;
   label: string;
@@ -87,6 +117,7 @@ export interface DonationMethod {
 }
 
 // --- Community Channel ---
+
 export interface CommunityChannel {
   id: string;
   name: string;
@@ -108,6 +139,7 @@ export interface CommunityChannel {
 }
 
 // --- Location ---
+
 export interface LocationInfo {
   name: string;
   address: string;
@@ -122,6 +154,7 @@ export interface LocationInfo {
 }
 
 // --- SEO ---
+
 export interface SEOMeta {
   title?: string;
   description?: string;
@@ -131,6 +164,7 @@ export interface SEOMeta {
 }
 
 // --- Site Config ---
+
 export interface SiteConfig {
   name: string;
   tagline: string;
@@ -152,6 +186,7 @@ export interface SiteConfig {
 }
 
 // --- Navigation ---
+
 export interface NavItem {
   label: string;
   href: string;
@@ -160,6 +195,7 @@ export interface NavItem {
 }
 
 // --- Content Distribution ---
+
 export interface ContentObject {
   type: 'event' | 'post' | 'page';
   slug: string;

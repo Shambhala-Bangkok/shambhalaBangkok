@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
-import { getActiveAllEvents } from '@/lib/events';
-import { getAllPosts } from '@/lib/blog';
-import { siteConfig } from '@/lib/config';
+import { NextResponse } from 'next/server'
+import {
+  getActiveUpcomingEvents,
+  getActivePastEvents,
+} from '@/lib/events'
+import { getAllPosts } from '@/lib/blog'
+import { siteConfig } from '@/lib/config'
 
 export async function GET() {
-  const baseUrl = siteConfig.url;
+  const baseUrl = siteConfig.url
 
   const staticPages = [
     '',
@@ -23,28 +26,41 @@ export async function GET() {
     '/privacy',
     '/terms',
     '/code-of-conduct',
-  ];
+  ]
 
-  const events = await getActiveAllEvents();
-  const posts = getAllPosts();
+  const [upcomingEvents, pastEvents] = await Promise.all([
+    getActiveUpcomingEvents(),
+    getActivePastEvents(),
+  ])
+
+  const events = [...upcomingEvents, ...pastEvents]
+  const posts = (await getAllPosts()).filter((post) => post.published)
 
   const urls = [
     ...staticPages.map((path) => ({
       loc: `${baseUrl}${path}`,
-      changefreq: path === '' || path === '/events' ? 'daily' : 'weekly',
-      priority: path === '' ? '1.0' : path === '/events' ? '0.9' : '0.7',
+      changefreq:
+        path === '' || path === '/events' ? 'daily' : 'weekly',
+      priority:
+        path === ''
+          ? '1.0'
+          : path === '/events'
+            ? '0.9'
+            : '0.7',
     })),
+
     ...events.map((e) => ({
       loc: `${baseUrl}/events/${e.slug}`,
       changefreq: 'weekly',
       priority: '0.8',
     })),
+
     ...posts.map((p) => ({
       loc: `${baseUrl}/blog/${p.slug}`,
       changefreq: 'monthly',
       priority: '0.6',
     })),
-  ];
+  ]
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -57,12 +73,12 @@ ${urls
   </url>`
   )
   .join('\n')}
-</urlset>`;
+</urlset>`
 
   return new NextResponse(xml, {
     headers: {
       'Content-Type': 'application/xml',
       'Cache-Control': 'public, max-age=3600',
     },
-  });
+  })
 }

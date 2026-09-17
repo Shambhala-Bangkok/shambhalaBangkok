@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPostBySlug, getAllPosts } from '@/lib/blog';
-import { blogPostSchema, breadcrumbSchema, generatePageMeta } from '@/lib/schema';
+import { generatePageMeta } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
-import { JsonLd } from '@/components/ui/JsonLd';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { BookList } from '@/components/ui/BookList';
 import { books } from '@/lib/books-data';
@@ -23,13 +22,13 @@ interface Params {
 }
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
+  const posts = (await getAllPosts()).filter((post) => post.published);
   return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
   return generatePageMeta({
     title: post.title,
@@ -40,7 +39,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Params) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   const sectionLabel = post.section ? SECTION_LABELS[post.section] : null;
@@ -51,13 +50,7 @@ export default async function BlogPostPage({ params }: Params) {
   ];
 
   return (
-    <>
-      <JsonLd data={blogPostSchema(post)} />
-      <JsonLd
-        data={breadcrumbSchema(breadcrumbItems.map((b) => ({ name: b.label, href: b.href })))}
-      />
-
-      <article className="container-content py-8 max-w-3xl">
+    <article className="container-content py-8 max-w-3xl">
         <Breadcrumbs items={breadcrumbItems} />
 
         <header className="mb-8">
@@ -101,7 +94,6 @@ export default async function BlogPostPage({ params }: Params) {
             ))}
           </div>
         )}
-      </article>
-    </>
+    </article>
   );
 }

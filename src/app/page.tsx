@@ -6,7 +6,6 @@ import { LocationBlock } from '@/components/ui/LocationBlock';
 import { BlogCard } from '@/components/ui/BlogCard';
 import { CTAStrip } from '@/components/ui/CTAStrip';
 import { FAQAccordion } from '@/components/ui/FAQAccordion';
-import { getActiveUpcomingEvents } from '@/lib/events';
 import { getRecentPosts } from '@/lib/blog';
 import Link from 'next/link';
 
@@ -43,8 +42,7 @@ const firstVisitFAQ = [
 ];
 
 export default async function HomePage() {
-  const upcomingEvents = await getActiveUpcomingEvents(6);
-  const recentPosts = getRecentPosts(3);
+  const recentPosts = await getRecentPosts(3);
 
   return (
     <>
@@ -76,17 +74,6 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {upcomingEvents.map((event) => (
-                <EventCard key={event.slug} event={event} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-text-secondary">
-              <p>No upcoming events right now. Join our community to stay updated!</p>
-            </div>
-          )}
 
           <div className="mt-6 text-center sm:hidden">
             <Link

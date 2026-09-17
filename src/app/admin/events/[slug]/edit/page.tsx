@@ -1,49 +1,84 @@
-import { notFound } from 'next/navigation';
-import { requireAuth } from '@/lib/auth';
-import { getContentBySlug } from '@/lib/content';
-import { EventForm } from '@/components/admin/EventForm';
-import type { SEvent } from '@/lib/types';
+import { notFound } from 'next/navigation'
+import { requireAuth } from '@/lib/auth'
+import { getEventBySlug, getEventSeriesForEvent } from '@/lib/events'
+import { EventForm } from '@/components/admin/EventForm'
 
 interface Params {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }
 
 export default async function EditEventPage({ params }: Params) {
-  await requireAuth();
-  const { slug } = await params;
-  const result = getContentBySlug<SEvent>('events', slug);
-  if (!result) notFound();
+  await requireAuth()
 
-  const { data, content } = result;
+  const { slug } = await params
+
+  const event = await getEventBySlug(slug)
+
+  if (!event) {
+    notFound()
+  }
+
+  const series = await getEventSeriesForEvent(
+    event.id
+  )
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Edit Event</h1>
-        <p className="text-sm text-gray-500">Editing: {data.title}</p>
+        <h1 className="text-2xl font-bold text-text-primary">
+          Edit Event
+        </h1>
+
+        <p className="mt-1 text-sm text-text-secondary">
+          Editing: {event.title}
+        </p>
       </div>
       <EventForm
         initial={{
-          title: data.title || '',
-          slug,
-          summary: data.summary || '',
-          startDate: data.startDate?.slice(0, 16) || '',
-          endDate: data.endDate?.slice(0, 16) || '',
-          location: data.location || '',
-          modality: data.modality || 'in-person',
-          registrationUrl: data.registrationUrl || '',
-          facilitator: data.facilitator || '',
-          pricing: data.pricing || 'free',
-          price: data.price,
-          suggestedDonation: data.suggestedDonation,
-          currency: data.currency || 'THB',
-          capacity: data.capacity,
-          tags: data.tags?.join(', ') || '',
-          image: data.image || '',
-          status: data.status || 'draft',
-          body: content,
+          id: event.id,
+          title: event.title || '',
+          slug: event.slug || '',
+          summary: event.summary || '',
+          startDate: event.startDate
+            ? event.startDate.slice(0, 16)
+            : '',
+          endDate: event.endDate
+            ? event.endDate.slice(0, 16)
+            : '',
+          location: event.location || '',
+          image: event.image || '',
+          status: event.published
+            ? 'published'
+            : 'draft',
+          body: event.description || '',
+          recurrence: series
+            ? {
+              type:
+                series.recurrence_type,
+              interval: series.interval,
+              weekdays:
+                series.weekdays,
+              occurrences:
+                series.occurrences as (
+                  | 'first'
+                  | 'second'
+                  | 'third'
+                  | 'fourth'
+                  | 'last'
+                )[],
+              count: series.count,
+              until: series.until,
+            }
+            : {
+              type: 'none',
+              interval: 1,
+              weekdays: [],
+              occurrences: [],
+              count: null,
+              until: null,
+            },
         }}
       />
     </div>
-  );
+  )
 }
