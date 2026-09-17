@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default async function AdminPostsPage() {
   await requireAuth();
-  const posts = await getAllPosts();
+  const posts = getAllPosts();
 
   return (
     <div className="space-y-6">
@@ -64,7 +64,7 @@ export default async function AdminPostsPage() {
         </table>
         {posts.length === 0 && (
           <div className="px-4 py-8 text-center text-text-tertiary">
-            No posts found. Create your first post to get started.
+            No posts found. Create a .md file in content/blog/ to add one.
           </div>
         )}
       </div>

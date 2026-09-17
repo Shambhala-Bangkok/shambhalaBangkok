@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { requireAuth } from '@/lib/auth';
-import { getPostBySlugAdmin } from '@/lib/blog';
+import { getContentBySlug } from '@/lib/content';
 import { PostForm } from '@/components/admin/PostForm';
+import type { BlogPost } from '@/lib/types';
 
 interface Params {
   params: Promise<{ slug: string }>;
@@ -10,28 +11,28 @@ interface Params {
 export default async function EditPostPage({ params }: Params) {
   await requireAuth();
   const { slug } = await params;
-  const post = await getPostBySlugAdmin(slug);
-  if (!post) notFound();
+  const result = getContentBySlug<BlogPost>('blog', slug);
+  if (!result) notFound();
+
+  const { data, content } = result;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Edit Post</h1>
-        <p className="text-sm text-gray-500">Editing: {post.title}</p>
+        <p className="text-sm text-gray-500">Editing: {data.title}</p>
       </div>
       <PostForm
         initial={{
-          id: post.id,
-          title: post.title || '',
+          title: data.title || '',
           slug,
-          date: post.date?.slice(0, 10) || '',
-          author: post.author || 'Bangkok Shambhala',
-          tags: post.tags?.join(', ') || '',
-          excerpt: post.excerpt || '',
-          image: post.image || '',
-          section: post.section || '',
-          published: post.published ?? false,
-          body: post.content,
+          date: data.date?.slice(0, 10) || '',
+          author: data.author || 'Bangkok Shambhala',
+          tags: data.tags?.join(', ') || '',
+          excerpt: data.excerpt || '',
+          image: data.image || '',
+          published: data.published ?? false,
+          body: content,
         }}
       />
     </div>

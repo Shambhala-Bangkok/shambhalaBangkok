@@ -23,13 +23,13 @@ interface Params {
 }
 
 export async function generateStaticParams() {
-  const posts = (await getAllPosts()).filter((post) => post.published);
+  const posts = getAllPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = getPostBySlug(slug);
   if (!post) return {};
   return generatePageMeta({
     title: post.title,
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Params) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = getPostBySlug(slug);
   if (!post) notFound();
 
   const sectionLabel = post.section ? SECTION_LABELS[post.section] : null;

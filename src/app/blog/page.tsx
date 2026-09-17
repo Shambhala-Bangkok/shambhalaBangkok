@@ -44,7 +44,7 @@ export default async function BlogPage({ searchParams }: Props) {
   const { section } = await searchParams;
   const activeSection = section && VALID_SECTIONS.has(section) ? (section as BlogSection) : null;
 
-  const posts = activeSection ? await getPostsBySection(activeSection) : await getBlogPosts();
+  const posts = activeSection ? getPostsBySection(activeSection) : getBlogPosts();
   const meta = activeSection ? SECTION_META[activeSection] : null;
 
   return (
