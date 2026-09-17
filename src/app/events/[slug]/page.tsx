@@ -3,12 +3,9 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getActiveEventBySlug, getAllEvents } from '@/lib/events';
 import {
-  eventSchema,
-  breadcrumbSchema,
   generatePageMeta,
 } from '@/lib/schema';
 import { formatDate, formatTime } from '@/lib/utils';
-import { JsonLd } from '@/components/ui/JsonLd';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { AddToCalendarButton } from '@/components/ui/AddToCalendarButton';
 import {
@@ -60,23 +57,7 @@ export default async function EventDetailPage({ params }: Params) {
   const isCancelled = event.status === 'cancelled';
 
   return (
-    <>
-      <JsonLd data={eventSchema(event)} />
-
-      <JsonLd
-        data={breadcrumbSchema([
-          {
-            name: 'Events',
-            href: '/events',
-          },
-          {
-            name: event.title,
-            href: `/events/${event.slug}`,
-          },
-        ])}
-      />
-
-      <article className="container-content py-8 md:py-12">
+    <article className="container-content py-8 md:py-12">
         <Breadcrumbs
           items={[
             {
@@ -315,7 +296,6 @@ export default async function EventDetailPage({ params }: Params) {
             </section>
           )}
         </div>
-      </article>
-    </>
+    </article>
   );
 }

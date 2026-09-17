@@ -42,7 +42,7 @@ const firstVisitFAQ = [
 ];
 
 export default async function HomePage() {
-  const recentPosts = getRecentPosts(3);
+  const recentPosts = await getRecentPosts(3);
 
   return (
     <>

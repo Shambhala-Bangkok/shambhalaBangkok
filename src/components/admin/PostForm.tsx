@@ -7,6 +7,7 @@ import { slugify } from '@/lib/utils';
 
 interface PostFormProps {
   initial?: {
+    id: string;
     title: string;
     slug: string;
     date: string;
@@ -14,6 +15,7 @@ interface PostFormProps {
     tags: string;
     excerpt: string;
     image: string;
+    section: string;
     published: boolean;
     body: string;
   };
@@ -27,6 +29,7 @@ const defaultValues = {
   tags: '',
   excerpt: '',
   image: '',
+  section: '',
   published: false,
   body: '',
 };
@@ -55,38 +58,60 @@ export function PostForm({ initial }: PostFormProps) {
     setSaving(true);
     setError('');
 
-    const frontmatter: Record<string, unknown> = {
+    const payload = {
+      id: initial?.id,
       title: form.title,
+      slug: form.slug,
       date: form.date,
       author: form.author || 'Bangkok Shambhala',
       tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
       excerpt: form.excerpt,
+      image: form.image,
+      section: form.section || undefined,
       published: form.published,
+      content: form.body,
     };
-    if (form.image) frontmatter.image = form.image;
 
     try {
-      const res = await fetch('/api/admin/content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'blog',
-          slug: form.slug,
-          frontmatter,
-          content: form.body,
-          message: `${isEdit ? 'Update' : 'Create'} post: ${form.title}`,
-        }),
+      const res = await fetch('/api/admin/posts', {
+        method: isEdit ? 'PATCH' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(initial ? { 'x-previous-slug': initial.slug } : {}),
+        },
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Failed to save');
       } else {
-        setSuccess('Post saved! The site will rebuild in ~30 seconds.');
-        setTimeout(() => router.push('/admin/posts'), 2000);
+        setSuccess('Post saved.');
+        router.push('/admin/posts');
+        router.refresh();
       }
     } catch {
       setError('Network error');
     } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!initial || !window.confirm(`Delete “${form.title}”? This cannot be undone.`)) return;
+    setSaving(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/posts', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: initial.id, slug: initial.slug }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete post');
+      router.push('/admin/posts');
+      router.refresh();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Network error');
       setSaving(false);
     }
   };
@@ -97,6 +122,18 @@ export function PostForm({ initial }: PostFormProps) {
       {success && <div className="bg-green-50 text-green-700 text-sm rounded-lg px-4 py-3">{success}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium mb-1">Section</label>
+          <select value={form.section} onChange={(e) => set('section', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Blog &amp; News</option>
+            <option value="shambhala-vision">Shambhala Vision</option>
+            <option value="what-we-offer">What We Offer</option>
+            <option value="bibliography">Bibliography</option>
+            <option value="resources">Resources</option>
+            <option value="membership">Membership</option>
+          </select>
+        </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Title *</label>
           <input type="text" value={form.title} onChange={(e) => set('title', e.target.value)}
@@ -155,6 +192,12 @@ export function PostForm({ initial }: PostFormProps) {
           className="px-6 py-2.5 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
           Cancel
         </button>
+        {isEdit && (
+          <button type="button" onClick={handleDelete} disabled={saving}
+            className="ml-auto px-6 py-2.5 border border-red-300 text-red-700 text-sm font-medium rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors">
+            Delete Post
+          </button>
+        )}
       </div>
     </form>
   );
