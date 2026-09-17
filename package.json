@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint src/",
     "format": "prettier --write .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "migrate:blog": "node scripts/migrate-blog-posts.mjs"
   },
   "keywords": [
     "shambhala",

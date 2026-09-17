@@ -34,7 +34,7 @@ export async function GET() {
   ])
 
   const events = [...upcomingEvents, ...pastEvents]
-  const posts = getAllPosts()
+  const posts = (await getAllPosts()).filter((post) => post.published)
 
   const urls = [
     ...staticPages.map((path) => ({
