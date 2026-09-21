@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { fromZonedTime } from 'date-fns-tz'
 
 import { requireAuth } from '@/lib/auth'
 
@@ -18,7 +17,6 @@ import {
 
 import {
     expandEventOccurrences,
-    type EventOccurrence,
 } from '@/lib/event-recurrence'
 
 import type { ParsedEvent } from '@/lib/event-parser'
@@ -72,15 +70,6 @@ function isRecurringInput(
         (recurrence.type === 'weekly' ||
             recurrence.type === 'monthly')
     )
-}
-
-function localDateTimeToUtc(
-    value: string
-): string {
-    return fromZonedTime(
-        value,
-        EVENT_TIMEZONE
-    ).toISOString()
 }
 
 function splitDateTime(

@@ -38,3 +38,12 @@ jobs:
         run: pnpm build
         env:
           NEXT_PUBLIC_SITE_URL: https://shambhala-bangkok.org
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL}}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_WEBHOOK_SECRET: ${{ secrets.RESEND_WEBHOOK_SECRET }}
+          RESEND_EMAIL_ADDRESS: ${{ vars.RESEND_EMAIL_ADDRESS }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          
+          

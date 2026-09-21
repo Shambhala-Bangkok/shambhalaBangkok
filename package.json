@@ -20,7 +20,6 @@
   ],
   "author": "Bangkok Shambhala",
   "license": "MIT",
-  "packageManager": "pnpm@10.32.1",
   "dependencies": {
     "@google/genai": "^2.20.0",
     "@supabase/ssr": "^0.12.5",
