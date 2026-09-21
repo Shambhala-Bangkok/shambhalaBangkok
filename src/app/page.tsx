@@ -1,5 +1,4 @@
 import { Hero } from '@/components/ui/Hero';
-import { EventCard } from '@/components/ui/EventCard';
 import { SocialJoinButtons } from '@/components/ui/SocialJoinButtons';
 import { DonateWidget } from '@/components/ui/DonateWidget';
 import { LocationBlock } from '@/components/ui/LocationBlock';

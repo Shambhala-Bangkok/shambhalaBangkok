@@ -2,7 +2,6 @@ import {
     addDays,
     addMonths,
     endOfMonth,
-    getDate,
     getDay,
     getDaysInMonth,
     startOfMonth,

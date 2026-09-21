@@ -1,6 +1,5 @@
 import { siteConfig } from '@/lib/config';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { DonationMethod } from '@/lib/types';
 

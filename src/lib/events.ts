@@ -21,6 +21,36 @@ export type EventSeries = {
   updated_at: string
 }
 
+/**
+ * Raw event row returned by Supabase.
+ *
+ * This represents the database shape before mapEvent transforms
+ * database fields such as starts_at and registration_url into
+ * the frontend-compatible SEvent shape.
+ */
+type EventRow = {
+  id: string
+  slug: string
+  title: string
+  summary: string | null
+  description: string
+  starts_at: string
+  ends_at: string
+  location: string | null
+  image: string | null
+  status: SEvent['status'] | null
+  modality: SEvent['modality'] | null
+  capacity: number | null
+  registration_url: string | null
+  published: boolean
+  series_id: string | null
+  import_id: string | null
+}
+
+type MappedEvent = SEvent & {
+  id: string
+}
+
 export async function createEventSeries(
   recurrence: {
     type: 'weekly' | 'monthly'
@@ -175,7 +205,8 @@ export async function createEventImport(
 
       if (retryError || !concurrentImport) {
         throw new Error(
-          `Failed to retrieve existing event import: ${retryError?.message ?? 'Unknown error'
+          `Failed to retrieve existing event import: ${
+            retryError?.message ?? 'Unknown error'
           }`
         )
       }
@@ -281,13 +312,13 @@ export async function createEvent(
   const slug =
     options?.seriesId
       ? await createRecurringEventSlug(
-        event.title,
-        event.starts_at
-      )
+          event.title,
+          event.starts_at
+        )
       : await createUniqueSlug(
-        event.title,
-        event.starts_at
-      )
+          event.title,
+          event.starts_at
+        )
 
   const { data, error } = await supabase
     .from('events')
@@ -468,16 +499,14 @@ export async function publishEventsByImportId(
   return data ?? []
 }
 
-function mapEvent(
-  event: any
-): SEvent & { id: string; slug: string } {
+function mapEvent(event: EventRow): MappedEvent {
   const supabase = createAdminClient()
 
   const imageUrl = event.image
     ? supabase.storage
-      .from('images')
-      .getPublicUrl(event.image)
-      .data.publicUrl
+        .from('images')
+        .getPublicUrl(event.image)
+        .data.publicUrl
     : null
 
   return {
@@ -487,7 +516,7 @@ function mapEvent(
     endDate: event.ends_at,
     summary: event.summary ?? '',
     location: event.location ?? '',
-    status: event.status ?? 'active',
+    status: event.status ?? 'published',
     modality: event.modality ?? undefined,
     capacity: event.capacity ?? undefined,
     registrationUrl:
