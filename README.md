@@ -31,7 +31,7 @@ Modern, fast, community-focused website for [Bangkok Shambhala](https://shambhal
 
 ```bash
 # Clone the repository
-git clone https://github.com/braisntext/shambhalaBangkok.git
+git clone https://github.com/br41s/shambhalaBangkok.git
 cd shambhalaBangkok
 
 # Install dependencies
