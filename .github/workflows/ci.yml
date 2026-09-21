@@ -7,6 +7,15 @@ on:
     branches: [main]
 
 jobs:
+  - name: Check environment
+  env:
+    SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+  run: |
+    [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && echo "SUPABASE URL: SET" || echo "SUPABASE URL: MISSING"
+    [ -n "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ] && echo "PUBLISHABLE KEY: SET" || echo "PUBLISHABLE KEY: MISSING"
+    [ -n "$SUPABASE_SECRET_KEY" ] && echo "SECRET KEY: SET" || echo "SECRET KEY: MISSING"
   build:
     runs-on: ubuntu-latest
 
