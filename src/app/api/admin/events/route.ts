@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { fromZonedTime } from 'date-fns-tz'
 
 import { requireAuth } from '@/lib/auth'
 
