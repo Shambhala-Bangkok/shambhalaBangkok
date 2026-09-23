@@ -17,12 +17,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11.20.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -34,14 +34,24 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Check environment
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && echo "SUPABASE URL: SET" || echo "SUPABASE URL: MISSING"
+          [ -n "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ] && echo "PUBLISHABLE KEY: SET" || echo "PUBLISHABLE KEY: MISSING"
+          [ -n "$SUPABASE_SECRET_KEY" ] && echo "SECRET KEY: SET" || echo "SECRET KEY: MISSING"
+
       - name: Build
         run: pnpm build
         env:
           NEXT_PUBLIC_SITE_URL: https://shambhala-bangkok.org
-          NEXT_PUBLIC_ICS_FEED: ${{ vars.NEXT_PUBLIC_ICS_FEED }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-          RESEND_EMAIL_ADDRESS: ${{ vars.RESEND_EMAIL_ADDRESS }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_WEBHOOK_SECRET: ${{ secrets.RESEND_WEBHOOK_SECRET }}
+          RESEND_EMAIL_ADDRESS: ${{ vars.RESEND_EMAIL_ADDRESS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
