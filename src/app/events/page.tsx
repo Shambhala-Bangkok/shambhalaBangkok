@@ -14,6 +14,7 @@ export default async function EventsPage() {
   const upcoming = await getActiveUpcomingEvents();
   const past = await getActivePastEvents(6);
 
+
   return (
     <div className="container-content py-8">
       <Breadcrumbs items={[{ label: 'Events', href: '/events' }]} />

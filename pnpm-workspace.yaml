@@ -1,0 +1,10 @@
+allowBuilds:
+  '@google/genai': false
+  protobufjs: false
+  puppeteer: true
+  sharp: false
+  unrs-resolver: false
+
+overrides:
+  picomatch: ">=4.0.4"
+  brace-expansion: ">=5.0.5"
