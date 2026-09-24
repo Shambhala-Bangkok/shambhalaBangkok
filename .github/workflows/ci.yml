@@ -55,3 +55,4 @@ jobs:
           RESEND_WEBHOOK_SECRET: ${{ secrets.RESEND_WEBHOOK_SECRET }}
           RESEND_EMAIL_ADDRESS: ${{ vars.RESEND_EMAIL_ADDRESS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_ICS_FEED: ${{ vars.NEXT_PUBLIC_ICS_FEED }}
